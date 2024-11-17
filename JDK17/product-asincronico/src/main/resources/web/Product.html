@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Product Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <form @submit.prevent="submitForm">
+        <div>
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" v-model="productName">
+        </div>
+        <div>
+            <label for="productPrice">Product Price:</label>
+            <input type="number" id="productPrice" v-model="productPrice">
+        </div>
+        <div>
+            <label for="productDescription">Product Description:</label>
+            <textarea id="productDescription" v-model="productDescription"></textarea>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    <div v-if="submitted">
+        <h2>Submitted Data</h2>
+        <p><strong>Product Name:</strong> {{ productName }}</p>
+        <p><strong>Product Price:</strong> {{ productPrice }}</p>
+        <p><strong>Product Description:</strong> {{ productDescription }}</p>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            productName: '',
+            productPrice: '',
+            productDescription: '',
+            submitted: false
+        },
+        methods: {
+            submitForm() {
+                this.submitted = true;
+            }
+        }
+    });
+</script>
+</body>
+</html>
