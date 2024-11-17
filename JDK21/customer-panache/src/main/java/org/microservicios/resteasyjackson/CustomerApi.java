@@ -47,15 +47,11 @@ public class CustomerApi {
 
     @PostConstruct
     void initialize() {
-        String host = System.getenv().getOrDefault("PRODUCT_API_HOST", "localhost");
-        int port = Integer.parseInt(System.getenv().getOrDefault("PRODUCT_API_PORT", "8082"));
         this.webClient = WebClient.create(vertx,
-                new WebClientOptions()
-                        .setDefaultHost(host)
-                        .setDefaultPort(port)
-                        .setSsl(false)
-                        .setTrustAll(true));
+                new WebClientOptions().setDefaultHost("localhost")
+                        .setDefaultPort(8081).setSsl(false).setTrustAll(true));
     }
+
 
 
     @GET
@@ -146,17 +142,10 @@ public class CustomerApi {
                 .onItem().ifNotNull().transform(entity -> Response.ok(entity).build())
                 .onItem().ifNull().continueWith(Response.ok().status(NOT_FOUND)::build);
     }
-
-
-
-
-    private Uni<Customer> getCustomerReactive(Long Id){
-         return Customer.findById(Id);
-}
-
-    private Uni<List<Product>> getAllProducts() {
-        long startTime = System.currentTimeMillis();
-        return webClient.getAbs("http://localhost:8082").send()
+    @GET
+    @Path("/products")
+    public Uni<List<Product>> getAllProducts(){
+        return webClient.get(8081, "localhost", "/product").send()
                 .onFailure().invoke(res -> log.error("Error recuperando productos ", res))
                 .onItem().transform(res -> {
                     List<Product> lista = new ArrayList<>();
@@ -173,9 +162,13 @@ public class CustomerApi {
                         }
                         lista.add(product);
                     });
-                    long endTime = System.currentTimeMillis();
-                    log.info("Execution time: " + (endTime - startTime) + " ms");
                     return lista;
                 });
     }
+
+
+    private Uni<Customer> getCustomerReactive(Long Id){
+         return Customer.findById(Id);
+}
+
 }
