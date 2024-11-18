@@ -48,8 +48,8 @@ public class CustomerApi {
     @PostConstruct
     void initialize() {
         this.webClient = WebClient.create(vertx,
-                new WebClientOptions().setDefaultHost("localhost")
-                        .setDefaultPort(8081).setSsl(false).setTrustAll(true));
+                new WebClientOptions().setDefaultHost(productServiceUrl)
+                        .setSsl(false).setTrustAll(true));
     }
 
 
@@ -145,7 +145,7 @@ public class CustomerApi {
     @GET
     @Path("/products")
     public Uni<List<Product>> getAllProducts(){
-        return webClient.get(8081, "localhost", "/product").send()
+        return webClient.get(8081, "product", "/product").send()
                 .onFailure().invoke(res -> log.error("Error recuperando productos ", res))
                 .onItem().transform(res -> {
                     List<Product> lista = new ArrayList<>();
