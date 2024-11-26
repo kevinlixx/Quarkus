@@ -255,9 +255,14 @@ docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/code-with-qua
 Una vez realizadas las pruebas del contenedor se crea de manera permanente ya que el -rm elimina el contenedor una vez se detiene
 
 ```bash
+docker network create my_network
+
+
 docker run -i -p 8080:8080 --network my_network --name customer quarkus/code-with-quarkus
 
-docker run -i -p 8082:8082 --network my_network --name product quarkus/code-with-quarkus
+docker run -i -p 8081:8081 --network my_network --name product quarkus/code-with-quarkus
+
+docker network inspect my_network
 ``` 
 
 en este caso se creo dos contenedores uno para el microservicio product y otro para el microservicio customer
@@ -267,28 +272,29 @@ en este caso se creo dos contenedores uno para el microservicio product y otro p
 > esta informacion es un ejemplo para la creacion de un dockerfile.native-micro para un microservicio, para mas informacion de los diferentes tipos de dockerfile se puede consultar en la documentacion de quarkus
 
 ### 2. Crear una red en docker
+En caso de que ya tenga creado los contenedores y quiera conectarlos a una red en docker se puede hacer de la siguiente manera
 
 - primero creamos una red en docker para que los contenedores puedan comunicarse entre si
 ```bash
-docker network create my-network
+docker network create my_network
 ```
 
 - luego conectamos los contenedores a la red creada
 ```bash
-docker network connect my-network my-quarkus-container
+docker network connect my_network my-quarkus-container
 ```
 En nuestro caso sera a los dos contenedores
 
 ```bash
 
-docker network connect my-network customer
+docker network connect my_network customer
 
-docker network connect my-network product
+docker network connect my_network product
 ```
 ahora confirma que los contenedores esten conectados a la red
 
 ```bash
-docker network inspect my-network
+docker network inspect my_network
 ```
 
 # Estimación de Costos para Despliegue de Microservicios en la Nube
