@@ -223,7 +223,6 @@ docker start sqlserver2017
 
 docker cp db.sql sqlserver2017:/db.sql 
 
-
 docker exec -it sqlserver2017 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -i /db.sql
 
 docker run -i --rm -p 8080:8080 --name customer quarkus/code-with-quarkus
@@ -295,6 +294,26 @@ ahora confirma que los contenedores esten conectados a la red
 
 ```bash
 docker network inspect my_network
+```
+
+## 3. Subir los contenedores a docker hub
+Para subir los contenedores a docker hub se debe seguir los siguientes pasos
+
+1. Iniciar sesion en docker hub
+```bash
+docker login
+```
+2. 
+```bash
+docker commit <container-id> tuusuario/nombreimagen:v1.0
+docker tag usuario/sqlserver2017:v1.0 usuario/sqlserver2017:v1.0 
+
+```
+
+para probar que la imagen se haya creado correctamente se puede hacer de la siguiente manera
+
+```bash
+docker pull tuusuario/tuimagen:v1.0
 ```
 
 # Estimación de Costos para Despliegue de Microservicios en la Nube
