@@ -306,7 +306,9 @@ docker login
 2. 
 ```bash
 docker commit <container-id> tuusuario/nombreimagen:v1.0
-docker tag usuario/sqlserver2017:v1.0 usuario/sqlserver2017:v1.0 
+docker commit kevinlix/product:v1.0
+docker tag usuario/iamgen:v1.0 usuario/imagen:v1.0 
+docker tag kevinlix/product:v1.0 kevinlix/product:v1.0 
 
 ```
 
@@ -314,6 +316,7 @@ para probar que la imagen se haya creado correctamente se puede hacer de la sigu
 
 ```bash
 docker pull tuusuario/tuimagen:v1.0
+docker pull kevinlix/product:v1.0
 ```
 
 # Estimación de Costos para Despliegue de Microservicios en la Nube
