@@ -57,7 +57,7 @@ public class CustomerApi {
     @GET
     public Uni<List<PanacheEntityBase>> list() {
         return Customer.listAll(Sort.by("names"));
-    }
+    } // nos busca todos los registros de la tabla el names es el campo por el cual se ordena
 
 
     @GET
@@ -100,7 +100,7 @@ public class CustomerApi {
                 .onFailure().recoverWithItem(e -> {
                     log.error("Recovering from error: ", e);
                     Customer errorCustomer = new Customer();
-                    errorCustomer.setNames("Error fetching customer or products: " + e.getMessage());
+                    errorCustomer.setNames("Error fetching: " + e.getMessage());
                     return errorCustomer;
                 });
     }
