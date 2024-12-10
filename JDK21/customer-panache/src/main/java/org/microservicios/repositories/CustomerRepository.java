@@ -8,5 +8,4 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class CustomerRepository implements PanacheRepositoryBase<Customer,Long> {
-
 }

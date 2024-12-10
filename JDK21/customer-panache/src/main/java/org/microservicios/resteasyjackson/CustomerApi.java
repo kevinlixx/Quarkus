@@ -53,23 +53,23 @@ public class CustomerApi {
     }
 
 
-
     @GET
     public Uni<List<PanacheEntityBase>> list() {
-        return Customer.listAll(Sort.by("names"));
+        return Customer.listAll(Sort.by("names"))
+                .onFailure().invoke(e -> log.error("Error fetching customers", e));
     }
 
 
     @GET
     @Path("using-repository")
     public Uni<List<Customer>> listUsingRepository() {
-        return cr.findAll().list();
+        return cr.findAll().list()
+                .onFailure().invoke(e -> log.error("Error fetching customers", e));
     }
 
     @GET
     @Path("/{Id}")
     public Uni<PanacheEntityBase> getById(@PathParam("Id") Long Id) {
-        log.info("Fetching customer with ID: " + Id);
         return Customer.findById(Id);
     }
 
@@ -96,13 +96,7 @@ public class CustomerApi {
                     return customer;
                 })
                 .onFailure().retry().atMost(3) // Retry up to 3 times on failure
-                .onFailure().invoke(e -> log.error("Error fetching customer or products", e))
-                .onFailure().recoverWithItem(e -> {
-                    log.error("Recovering from error: ", e);
-                    Customer errorCustomer = new Customer();
-                    errorCustomer.setNames("Error fetching customer or products: " + e.getMessage());
-                    return errorCustomer;
-                });
+                .onFailure().invoke(e -> log.error("Error fetching customer or products", e));
     }
 
     @POST
@@ -153,7 +147,6 @@ public class CustomerApi {
                     objects.forEach(p -> {
                         log.info("See Objects: " + objects);
                         ObjectMapper objectMapper = new ObjectMapper();
-                        // Pass JSON string and the POJO class
                         Product product = null;
                         try {
                             product = objectMapper.readValue(p.toString(), Product.class);

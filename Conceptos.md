@@ -1,34 +1,26 @@
-# <center> Quarkus</center>
-
 ## Tabla de Contenidos
-1. [Descripción](#descripción)
-2. [Prerrequisitos](#prerrequisitos)
-    - [Java](#java)
-    - [IDE](#ide)
-    - [Apache Maven](#apache-maven)
-    - [Docker Desktop](#docker-desktop)
-3. [Programación reactiva en Quarkus](#programación-reactiva-en-quarkus)
+1. [Programación reactiva en Quarkus](#1-programación-reactiva-en-quarkus)
     - [Vert.x](#vertx)
     - [Mutiny](#mutiny)
     - [Hibernate ORM Panache](#hibernate-orm-panache)
-4. [Configuración base de datos en Quarkus](#configuración-base-de-datos-en-quarkus)
-    - [Configuración de una base de datos de forma sincrona](#configuración-de-una-base-de-datos-de-forma-sincrona)
-    - [Configuración de una base de datos de forma asincrona](#configuración-de-una-base-de-datos-de-forma-asincrona)
-    - [Conexión externa a la base de datos](#conexión-externa-a-la-base-de-datos)
+2. [Configuración base de datos en Quarkus](#2-configuracion-base-de-datos-en-quarkus)
+    - [Configuración de una base de datos de forma sincrona](#configuracion-de-una-base-de-datos-de-forma-sincrona)
+    - [Configuración de una base de datos de forma asincrona](#configuracion-de-una-base-de-datos-de-forma-asincrona)
+    - [Conexión externa a la base de datos](#conexion-externa-a-la-base-de-datos)
     - [JDBC vs vertx-reactive](#jdbc-vs-vertx-reactive)
-5. [Instalación de una base de datos en Docker](#instalación-de-una-base-de-datos-en-docker)
-    - [Crear BD y usuario en la imagen de SQL Server](#crear-bd-y-usuario-en-la-imagen-de-sql-server)
-6. [Conexión de microservicios de Quarkus en Docker](#conexión-de-microservicios-de-quarkus-en-docker)
-    - [Configuración de Docker](#configuración-de-docker)
-    - [Construcción de la imagen de Docker para los dos microservicios](#construcción-de-la-imagen-de-docker-para-los-dos-microservicios)
-    - [Crear una red en Docker](#crear-una-red-en-docker)
-7. [Servicios en la nube](#servicio-en-la-nube)
-    - [Oracle Cloud Infrastructure (OCI)](#oracle-cloud-infrastructure-oci)
-
-
+3. [Instalación de una base de datos en Docker](#4-instalación-de-una-base-de-datos-en-docker)
+    - [Crear la BD y usuario en la imagen de SQL Server](#crear-la-bd-y-usuario-en-la-imagen-de-sqlserver)
+4. [Conexión de microservicios de Quarkus en Docker](#4-conexion-de-microservicios-de-quarkus-en-docker)
+    - [Configuración de Docker](#Cofiguracion-de-docker)
+    - [Construcción de la imagen de Docker para los dos microservicios](#1-contruccion-de-la-imagen-de-docker-para-los-dos-microservicios)
+    - [Crear una red en Docker](#2-crear-una-red-en-docker)
+5. [Estimación de Costos para Despliegue de Microservicios en la Nube](#estimación-de-costos-para-despliegue-de-microservicios-en-la-nube)
+    - [Oracle Cloud Infrastructure (OCI)](#1-oracle-cloud-infrastructure-oci)
+    - [Amazon Web Services (AWS)](#2-amazon-web-services-aws)
+    - [Microsoft Azure](#3-microsoft-azure)
     
-
-## Descripción
+# <center> Quarkus</center>
+## 1. definicion de Quarkus
 
 Quarkus es un framework de Java que permite construir aplicaciones de forma rápida y eficiente. Quarkus se basa en la tecnología de GraalVM, que permite compilar aplicaciones Java en binarios nativos, lo que mejora el rendimiento y la eficiencia de las aplicaciones, esta tecnologia es muy util para la construccion de microservicios y aplicaciones reactivas, esta enfocada en programacion en la nube.
 
@@ -37,71 +29,8 @@ Quarkus es un framework de Java que permite construir aplicaciones de forma ráp
 <image src="https://quarkus.io/assets/images/home/quarkus_metrics_graphic_bootmem_wide.png">
 
 </section>
-    
-# Prerrequisitos 
-Para poder ejecutar, compilar y empaquetar un proyecto de Quarkus, es necesario tener instalado en el sistema las siguientes herramientas:
 
-## Java
-Quarkus requiere de una versión de Java 17 o superior para poder ejecutar y compilar aplicaciones. para este caaso instalaremos el JDK 21 acompañado de GraalVM para poder compilar y empaquetar la aplicacion en un ejecutable nativo.
-
-[Descargar GraalVM for JDK 21.0.5 ](https://www.oracle.com/java/technologies/downloads/#graalvmjava21-windows)
-
-### Configuración de las variables de entorno
-Para configurar las variables de entorno de Java, se debe seguir los siguientes pasos:
-
-1. Descomprimir el archivo descargado de GraalVM en una carpeta de preferencia.
-2. Crear una nueva variable de entorno llamada `JAVA_HOME`,`GRAALVM_HOME` y asignarle la ruta de la carpeta donde se descomprimió GraalVM. 
-Por ejemplo:
-```
-GRAALVM_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
-JAVA_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
-```
-3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de GraalVM.
-Por ejemplo:
-```
-%JAVA_HOME%\bin
-%GRAALVM_HOME%\bin
-```
-4. Para verificar que la instalación de Java se realizó correctamente, abrir una terminal y ejecutar el siguiente comando:
-```
-java -version
-```
-
-## IDE
-Para el desarrollo de aplicaciones con Quarkus, se recomienda utilizar IDE intellij IDEA debido a que es una de las herramientas más completas y con mayor soporte para el desarrollo de aplicaciones con Quarkus. Para instalar intellij IDEA, se debe seguir los siguientes pasos:
-
-1. Descargar el instalador de intellij IDEA Community 2024-3 desde el siguiente enlace: [https://www.jetbrains.com/idea/download/](https://www.jetbrains.com/es-es/idea/download/?section=windows).
-
-2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
-
-3. Una vez finalizada la instalación, abrir intellij IDEA y ir al a opcion de plugins en el menú de configuración y seleccionar el plugin de Quarkus Tools(2.0.2),Lombok(v.242.23726.38),Docker(v.242.24807.21) y Github Copilot(v.1.5.29.7524).
-
-## Apache Maven
-Maven es una herramienta de gestión y construcción de proyectos Java. Quarkus utiliza Maven para gestionar las dependencias, Para instalar Apache Maven, se debe Descargar el archivo binario de Apache Maven-3.9.9 desde el siguiente enlace: [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi).
-
-### Configuración de las variables de entorno
-Para configurar las variables de entorno de Maven, se debe seguir los siguientes pasos:
-
-1. Descomprimir el archivo descargado de Apache Maven en una carpeta de preferencia.
-2. Crear una nueva variable de entorno llamada `MAVEN_HOME` y asignarle la ruta de la carpeta donde se descomprimió Apache Maven.
-Por ejemplo:
-```
-MAVEN_HOME=C:\Program Files\apache-maven-3.9.9
-```
-3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de Apache Maven.
-Por ejemplo:
-```
-%MAVEN_HOME%\bin
-```
-
-## Docker Desktop
-Docker Desktop es una herramienta que permite la creación, administración y ejecución de contenedores Docker en sistemas operativos Windows y macOS. Para instalar Docker Desktop, se debe seguir los siguientes pasos:
-
-1. Descargar el instalador de Docker Desktop v.4.36.0 desde el siguiente enlace: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
-
-2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
-
-## Programación reactiva en Quarkus
+## 1. Programación reactiva en Quarkus
 
 - La programación reactiva es un paradigma de programación que se basa en la reactividad, es decir, en la capacidad de responder a los eventos de forma eficiente y escalable. En este sentido, la programación reactiva se centra en la creación de aplicaciones que puedan responder a los eventos de forma rápida y eficiente, lo que permite mejorar la experiencia del usuario y la escalabilidad de las aplicaciones.
 
@@ -173,11 +102,11 @@ Permite trabajar con una base de datos de forma reactiva y simplifica las operac
 >
 > Para obtener más información sobre Hibernate orm panache y  dependencias mas especificas, haz clic en [Hibernate orm panache](https://quarkus.io/guides/hibernate-orm-panache).
 
-# Configuración base de datos en Quarkus
+# 2. Configuracion base de datos en quarkus
 
 En quarkus se puede trabajar con diferentes bases de datos como mysql, postgresql, sqlserver, etc; hay dos formas de trabajar con una base de datos en quarkus de forma sincrona y asincrona, A continuacion se explicara como configurar una base de datos en quarkus.
 
-## Configuración de una base de datos de forma sincrona
+## Configuracion de una base de datos de forma sincrona
 
 Para la configuracion de una base de datos de forma sincrona se debe agregar las siguientes dependencias en el archivo pom.xml
 
@@ -203,7 +132,7 @@ quarkus.datasource.jdbc.max-size=20
 
 - se trabaja con jdbc para la conexion a la base de datos de forma sincrona y se bloquea el hilo de ejecucion hasta que se obtenga una respuesta de la base de datos
 
-## Configuración de una base de datos de forma asincrona
+## Configuracion de una base de datos de forma asincrona
 
 Para la configuracion de una base de datos de forma asincrona se debe agregar las siguientes dependencias en el archivo pom.xml
 
@@ -234,12 +163,13 @@ quarkus.datasource.jdbc=false
 >
 > el jdbc= false indica que se va a trabajar con una base de datos reactiva ya que el jdbc se trabaja con una base de datos de forma sincrona y la idea es que sea de manera asincroica y la aplication properties tiene por defecto el jbc
 
-## Conexión externa a la base de datos
+## conexion externa a la base de datos
 Para conectar quarkus con un db donde su properties estan en una ruta especifica se debe agregar la siguiente propiedad en el archivo aplication.properties
 
 ``` properties
 quarkus.cofig.locations=classpath:application.properties, file:/path/to/properties
 ```
+
 el classpath:application.properties es la ruta por defecto de las propiedades de la aplicacion y el file:/path/to/properties es la ruta donde se encuentra el archivo de propiedades de la base de datos
 
 
@@ -262,7 +192,7 @@ el classpath:application.properties es la ruta por defecto de las propiedades de
 >
 > Para obtener más información sobre la configuracion de una base de datos en quarkus, haz clic en [Configuracion de base de datos](https://quarkus.io/guides/datasource).
 
-# instalación de una base de datos en docker
+# 4. instalación de una base de datos en docker
 
 para la instalacion de una base de datos en docker se debe seguir los siguientes pasos
 
@@ -281,7 +211,7 @@ docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 
 docker ps
 ```
 
-### Crear bd y usuario en la imagen de sqlserver
+### Crear la bd y usuario en la imagen de sqlserver
 para crear la base de datos y el usuario en la imagen de sqlserver se puede hacer de dos formas, la primera es conectandose a la imagen de sqlserver y la segunda es copiando un archivo .sql a la imagen de sqlserver, en este caso se va a realizar la segunda forma
 
 ```bash
@@ -292,7 +222,7 @@ docker cp db.sql sqlserver2017:/db.sql
 docker exec -it sqlserver2017 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -i /db.sql
 ```
 
-# Conexion de microservicios de quarkus en docker
+# 4. Conexion de microservicios de quarkus en docker
 
 ## Cofiguracion de docker
 
@@ -313,6 +243,7 @@ el package type native indica que se va a trabajar con una imagen de docker y el
 
 
 docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/code-with-quarkus .
+
 
 
 ```
@@ -392,9 +323,9 @@ docker pull tuusuario/tuimagen:v1.0
 docker pull avvillas/product:v1.0
 ```
 
-# Servicio en la nube
+# Servicios en la nube
 
-## Oracle Cloud Infrastructure (OCI) 
+## 1. Oracle Cloud Infrastructure (OCI) 
 OCI es una plataforma de nube pública y privada que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio. OCI es una plataforma de nube de alto rendimiento y segura que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio. OCI es una plataforma de nube de alto rendimiento y segura que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio.
 
 ### Opciones principales:
