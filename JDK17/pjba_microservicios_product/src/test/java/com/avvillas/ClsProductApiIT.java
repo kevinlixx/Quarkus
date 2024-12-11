@@ -3,9 +3,6 @@ package com.avvillas;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class ExampleResourceIT extends ExampleResourceTest {
+class ClsProductApiIT extends ClsProductApiTest {
     // Execute the same tests but in packaged mode.
-
 }
-
-
