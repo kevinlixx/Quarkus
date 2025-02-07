@@ -33,6 +33,8 @@ public class ClsProductApi {
                 .onFailure().invoke(e -> log.error("Error al recuperar productos", e));
     }
 
+
+
     @GET
     @Path("/{Id}")
     public Uni<PanacheEntityBase> getById(@PathParam("Id") Long Id) {
@@ -50,6 +52,7 @@ public class ClsProductApi {
         }
         log.info("Agregando producto: " + p);
         return Panache.withTransaction(p::persist)
+
                 .onItem().transform(inserted -> Response.status(Response.Status.CREATED).build())
                 .onFailure().invoke(e -> log.error("Error al persistir producto", e));
     }

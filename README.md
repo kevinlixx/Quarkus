@@ -1,121 +1,83 @@
-# <center> Quarkus</center>
+# 
 
 ## Tabla de Contenidos
-1. [Descripción](#descripción)
-2. [Prerrequisitos](#prerrequisitos)
+- [](#)
+  - [Tabla de Contenidos](#tabla-de-contenidos)
+- [ Quarkus](#-quarkus)
+    - [¿Qué es GraalVM?](#qué-es-graalvm)
+    - [programacion reactiva](#programacion-reactiva)
+      - [vertx](#vertx)
+        - [dependencia necesaria para vertx](#dependencia-necesaria-para-vertx)
+    - [Mutiny](#mutiny)
+      - [Uni y Multi](#uni-y-multi)
+      - [dependencia necesaria para mutiny](#dependencia-necesaria-para-mutiny)
+    - [Hibernate orm panache](#hibernate-orm-panache)
+      - [Dependencias necesarias para hibernate orm panache](#dependencias-necesarias-para-hibernate-orm-panache)
+    - [Microservicios](#microservicios)
+  - [Prerrequisitos para trabajar con Quarkus](#prerrequisitos-para-trabajar-con-quarkus)
     - [Java](#java)
+    - [Configuración de las variables de entorno](#configuración-de-las-variables-de-entorno)
     - [IDE](#ide)
     - [Apache Maven](#apache-maven)
+    - [Configuración de las variables de entorno](#configuración-de-las-variables-de-entorno-1)
     - [Docker Desktop](#docker-desktop)
-3. [Programación reactiva en Quarkus](#programación-reactiva-en-quarkus)
-    - [Vert.x](#vertx)
-    - [Mutiny](#mutiny)
-    - [Hibernate ORM Panache](#hibernate-orm-panache)
-4. [Configuración base de datos en Quarkus](#configuración-base-de-datos-en-quarkus)
-    - [Configuración de una base de datos de forma sincrona](#configuración-de-una-base-de-datos-de-forma-sincrona)
-    - [Configuración de una base de datos de forma asincrona](#configuración-de-una-base-de-datos-de-forma-asincrona)
-    - [Conexión externa a la base de datos](#conexión-externa-a-la-base-de-datos)
+  - [Creación de un proyecto Quarkus](#creación-de-un-proyecto-quarkus)
+  - [Estructura de un proyecto Quarkus](#estructura-de-un-proyecto-quarkus)
+- [Configuración base de datos en Quarkus](#configuración-base-de-datos-en-quarkus)
+  - [Configuración de una base de datos de forma sincrona](#configuración-de-una-base-de-datos-de-forma-sincrona)
+  - [Configuración de una base de datos de forma asincrona](#configuración-de-una-base-de-datos-de-forma-asincrona)
+  - [Conexión externa a la base de datos](#conexión-externa-a-la-base-de-datos)
     - [JDBC vs vertx-reactive](#jdbc-vs-vertx-reactive)
-5. [Instalación de una base de datos en Docker](#instalación-de-una-base-de-datos-en-docker)
-    - [Crear BD y usuario en la imagen de SQL Server](#crear-bd-y-usuario-en-la-imagen-de-sql-server)
-6. [Conexión de microservicios de Quarkus en Docker](#conexión-de-microservicios-de-quarkus-en-docker)
-    - [Configuración de Docker](#configuración-de-docker)
-    - [Construcción de la imagen de Docker para los dos microservicios](#construcción-de-la-imagen-de-docker-para-los-dos-microservicios)
-    - [Crear una red en Docker](#crear-una-red-en-docker)
-7. [Servicios en la nube](#servicio-en-la-nube)
-    - [Oracle Cloud Infrastructure (OCI)](#oracle-cloud-infrastructure-oci)
+- [instalación de una base de datos en docker](#instalación-de-una-base-de-datos-en-docker)
+    - [Crear bd y usuario en la imagen de sqlserver](#crear-bd-y-usuario-en-la-imagen-de-sqlserver)
+- [Conexion de microservicios de quarkus en docker](#conexion-de-microservicios-de-quarkus-en-docker)
+  - [Cofiguracion de docker](#cofiguracion-de-docker)
+    - [configuracion pom.xml](#configuracion-pomxml)
+    - [1. Contruccion de la imagen de docker para los dos microservicios](#1-contruccion-de-la-imagen-de-docker-para-los-dos-microservicios)
+    - [2. Crear una red en docker](#2-crear-una-red-en-docker)
+  - [3. Subir los contenedores a docker hub](#3-subir-los-contenedores-a-docker-hub)
 
+# <center> Quarkus</center>
 
-    
+Quarkus es un framework de Java diseñado para construir aplicaciones de forma rápida y eficiente, especialmente en entornos de microservicios y aplicaciones en la nube. Quarkus se basa en la tecnología de GraalVM, que permite compilar aplicaciones Java en binarios nativos, mejorando significativamente el rendimiento y la eficiencia junto con la implemetacion de programacion reactiva la cual permite trabajar con operaciones, eventos y flujos de forma asincrona.
 
-## Descripción
-
-Quarkus es un framework de Java que permite construir aplicaciones de forma rápida y eficiente. Quarkus se basa en la tecnología de GraalVM, que permite compilar aplicaciones Java en binarios nativos, lo que mejora el rendimiento y la eficiencia de las aplicaciones, esta tecnologia es muy util para la construccion de microservicios y aplicaciones reactivas, esta enfocada en programacion en la nube.
-
-<section style="background-color: white;">listo 
-
+<section style="background-color: white;">
 <image src="https://quarkus.io/assets/images/home/quarkus_metrics_graphic_bootmem_wide.png">
-
 </section>
-    
-# Prerrequisitos 
-Para poder ejecutar, compilar y empaquetar un proyecto de Quarkus, es necesario tener instalado en el sistema las siguientes herramientas:
-
-## Java
-Quarkus requiere de una versión de Java 17 o superior para poder ejecutar y compilar aplicaciones. para este caaso instalaremos el JDK 21 acompañado de GraalVM para poder compilar y empaquetar la aplicacion en un ejecutable nativo.
-
-[Descargar GraalVM for JDK 21.0.5 ](https://www.oracle.com/java/technologies/downloads/#graalvmjava21-windows)
-
-### Configuración de las variables de entorno
-Para configurar las variables de entorno de Java, se debe seguir los siguientes pasos:
-
-1. Descomprimir el archivo descargado de GraalVM en una carpeta de preferencia.
-2. Crear una nueva variable de entorno llamada `JAVA_HOME`,`GRAALVM_HOME` y asignarle la ruta de la carpeta donde se descomprimió GraalVM. 
-Por ejemplo:
-```
-GRAALVM_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
-JAVA_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
-```
-3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de GraalVM.
-Por ejemplo:
-```
-%JAVA_HOME%\bin
-%GRAALVM_HOME%\bin
-```
-4. Para verificar que la instalación de Java se realizó correctamente, abrir una terminal y ejecutar el siguiente comando:
-```
-java -version
-```
-
-## IDE
-Para el desarrollo de aplicaciones con Quarkus, se recomienda utilizar IDE intellij IDEA debido a que es una de las herramientas más completas y con mayor soporte para el desarrollo de aplicaciones con Quarkus. Para instalar intellij IDEA, se debe seguir los siguientes pasos:
-
-1. Descargar el instalador de intellij IDEA Community 2024-3 desde el siguiente enlace: [https://www.jetbrains.com/idea/download/](https://www.jetbrains.com/es-es/idea/download/?section=windows).
-
-2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
-
-3. Una vez finalizada la instalación, abrir intellij IDEA y ir al a opcion de plugins en el menú de configuración y seleccionar el plugin de Quarkus Tools(2.0.2),Lombok(v.242.23726.38),Docker(v.242.24807.21) y Github Copilot(v.1.5.29.7524).
-
-## Apache Maven
-Maven es una herramienta de gestión y construcción de proyectos Java. Quarkus utiliza Maven para gestionar las dependencias, Para instalar Apache Maven, se debe Descargar el archivo binario de Apache Maven-3.9.9 desde el siguiente enlace: [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi).
-
-### Configuración de las variables de entorno
-Para configurar las variables de entorno de Maven, se debe seguir los siguientes pasos:
-
-1. Descomprimir el archivo descargado de Apache Maven en una carpeta de preferencia.
-2. Crear una nueva variable de entorno llamada `MAVEN_HOME` y asignarle la ruta de la carpeta donde se descomprimió Apache Maven.
-Por ejemplo:
-```
-MAVEN_HOME=C:\Program Files\apache-maven-3.9.9
-```
-3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de Apache Maven.
-Por ejemplo:
-```
-%MAVEN_HOME%\bin
-```
-
-## Docker Desktop
-Docker Desktop es una herramienta que permite la creación, administración y ejecución de contenedores Docker en sistemas operativos Windows y macOS. Para instalar Docker Desktop, se debe seguir los siguientes pasos:
-
-1. Descargar el instalador de Docker Desktop v.4.36.0 desde el siguiente enlace: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
-
-2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
-
-## Programación reactiva en Quarkus
-
-- La programación reactiva es un paradigma de programación que se basa en la reactividad, es decir, en la capacidad de responder a los eventos de forma eficiente y escalable. En este sentido, la programación reactiva se centra en la creación de aplicaciones que puedan responder a los eventos de forma rápida y eficiente, lo que permite mejorar la experiencia del usuario y la escalabilidad de las aplicaciones.
 
 > [!NOTE]
 >
-> Para mas informacion sobre todo lo relacionado con la programacion reactiva en quarkus, se puede consultar en la documentacion oficial de quarkus 
-    [Programacion reactiva](https://es.quarkus.io/guides/getting-started-reactive).
+> Para obtener más información sobre Quarkus, haz clic en [Quarkus](https://quarkus.io/)
 
-En Quarkus, para trabajar con programación reactiva, se utilizan Vert.x, Mutiny y Hibernate ORM con Panache las cuales son  dependencias necesarias para trabajar con programacion reactiva en quarkus. A continuación, se explicará brevemente cada uno de ellos.
 
-### vertx 
+
+### ¿Qué es GraalVM?
+
+GraalVM es una máquina virtual universal que soporta múltiples lenguajes de programación y permite la ejecución de aplicaciones en diferentes entornos. Una de las características más destacadas de GraalVM es su capacidad para compilar aplicaciones Java en binarios nativos. Esto significa que las aplicaciones pueden ejecutarse directamente en el sistema operativo sin necesidad de una máquina virtual Java (JVM), lo que reduce el tiempo de arranque y el uso de memoria.
+
+<center> <img src="https://docs.oracle.com/en/graalvm/enterprise/20/docs/docs/img/graalvm_architecture.png"> </center>
+
+> [!NOTE]
+>
+> Para obtener más información sobre GraalVM, haz clic en [GraalVM](https://www.graalvm.org/).
+>
+
+### programacion reactiva
+
+La programación reactiva es un paradigma de programación que se basa en la reactividad, es decir, en la capacidad de responder a los eventos de forma eficiente y escalable. En este sentido, la programación reactiva se centra en la creación de aplicaciones que puedan responder a los eventos de forma rápida y eficiente, lo que permite mejorar la experiencia del usuario y la escalabilidad de las aplicaciones.
+
+
+
+> [!NOTE]
+>
+> Para entender mas sobre la programacion reactiva en quarkus, haz clic en [Programacion reactiva](https://quarkus.io/guides/quarkus-reactive-architecture).
+>
+En Quarkus, para trabajar con programación reactiva, se utilizan Vert.x, Mutiny y Hibernate ORM con Panache las cuales son  dependencias necesarias para trabajar con programacion reactiva en quarkus.
+
+#### vertx 
 Es un motor de eventos que permite construir aplicaciones reactivas y escalables. Vert.x se basa en el modelo de actores, lo que significa que cada componente de la aplicación es un actor independiente que puede recibir y enviar mensajes de forma asíncrona. Esto permite construir aplicaciones reactivas que pueden responder a los eventos de forma eficiente y escalable.
 
-#### dependencia necesaria para vertx
+##### dependencia necesaria para vertx
 
 ```xml
 <dependency>
@@ -129,7 +91,7 @@ Es un motor de eventos que permite construir aplicaciones reactivas y escalables
 > Para obtener más información sobre Vert.x y  dependencias mas especificas, haz clic en [Vert.x](https://es.quarkus.io/guides/vertx).
 
 ### Mutiny
-Es una biblioteca reactiva que permite trabajar  operacioones, eventos y flujos de forma reactiva. Mutiny se basa en el modelo de programación reactiva, lo que significa que las operaciones se realizan de forma asíncrona y se pueden componer de forma eficiente y escalable.
+Es una biblioteca reactiva que permite trabajar  operaciones, eventos y flujos de forma reactiva. Mutiny se basa en el modelo de programación reactiva, lo que significa que las operaciones se realizan de forma asíncrona y se pueden componer de forma eficiente y escalable.
 
 se puede trabajar con dos tipos de resultados:
 #### Uni y Multi
@@ -172,6 +134,120 @@ Permite trabajar con una base de datos de forma reactiva y simplifica las operac
 > [!NOTE]
 >
 > Para obtener más información sobre Hibernate orm panache y  dependencias mas especificas, haz clic en [Hibernate orm panache](https://quarkus.io/guides/hibernate-orm-panache).
+
+### Microservicios
+
+Los microservicios son una arquitectura de software que divide una aplicación en pequeños servicios independientes que se comunican entre sí. Cada microservicio se encarga de una funcionalidad específica y puede desarrollarse, desplegarse y escalarse de forma independiente. Quarkus está optimizado para la creación de microservicios, proporcionando un entorno de desarrollo rápido y eficiente, así como herramientas para la integración y despliegue en la nube.
+
+<center><img src='https://www.arrobasolutions.com/wp-content/uploads/2021/10/Arquitectura-de-microservicios-que-es-y-cuales-son-sus-ventajas.jpg'></center>
+
+>[!NOTE]
+>
+> para obtener mas informacion sobre microservicios en quarkus, haz clic en [Microservicios](https://www.redhat.com/es/topics/microservices).
+
+
+## Prerrequisitos para trabajar con Quarkus 
+Para poder ejecutar, compilar y empaquetar un proyecto de Quarkus, es necesario tener instalado en el sistema las siguientes herramientas:
+
+### Java
+Quarkus requiere de una versión de Java 17 o superior para poder ejecutar y compilar aplicaciones. para este caso instalaremos el JDK 21 acompañado de GraalVM para poder compilar y empaquetar la aplicacion en un ejecutable nativo.
+
+[Descargar GraalVM for JDK 21.0.5 ](https://www.oracle.com/java/technologies/downloads/#graalvmjava21-windows)
+
+### Configuración de las variables de entorno
+Para configurar las variables de entorno de Java, se debe seguir los siguientes pasos:
+
+1. Descomprimir el archivo descargado de GraalVM en una carpeta de preferencia.
+2. Crear una nueva variable de entorno llamada `JAVA_HOME`,`GRAALVM_HOME` y asignarle la ruta de la carpeta donde se descomprimió GraalVM. 
+Por ejemplo:
+```
+GRAALVM_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
+JAVA_HOME=C:\Program Files\GraalVM\graalvm-jdk-21.0.5+9.1
+```
+3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de GraalVM.
+Por ejemplo:
+```
+%JAVA_HOME%\bin
+%GRAALVM_HOME%\bin
+```
+4. Para verificar que la instalación de Java se realizó correctamente, abrir una terminal y ejecutar el siguiente comando:
+```
+java -version
+```
+
+### IDE
+Para el desarrollo de aplicaciones con Quarkus, se recomienda utilizar IDE intellij IDEA debido a que es una de las herramientas más completas y con mayor soporte para el desarrollo de aplicaciones con Quarkus. Para instalar intellij IDEA, se debe seguir los siguientes pasos:
+
+1. Descargar el instalador de intellij IDEA Community 2024-3 desde el siguiente enlace: [https://www.jetbrains.com/idea/download/](https://www.jetbrains.com/es-es/idea/download/?section=windows).
+
+2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
+
+3. Una vez finalizada la instalación, abrir intellij IDEA y ir al a opcion de plugins en el menú de configuración y seleccionar los siguientes plugins 
+   - Quarkus Tools
+   - Lombok
+   - Docker
+   - Github Copilot
+  
+  <center> <img src='./imgs/img_extensiones.png' style= 'width: 80%; height: 50%;'> </img></center>
+
+### Apache Maven
+Maven es una herramienta de gestión y construcción de proyectos Java. Quarkus utiliza Maven para gestionar las dependencias, Para instalar Apache Maven, se debe Descargar el archivo binario de Apache Maven-3.9.9 desde el siguiente enlace: [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi).
+
+### Configuración de las variables de entorno
+Para configurar las variables de entorno de Maven, se debe seguir los siguientes pasos:
+
+1. Descomprimir el archivo descargado de Apache Maven en una carpeta de preferencia.
+2. Crear una nueva variable de entorno llamada `MAVEN_HOME` y asignarle la ruta de la carpeta donde se descomprimió Apache Maven.
+Por ejemplo:
+```
+MAVEN_HOME=C:\Program Files\apache-maven-3.9.9
+```
+3. Editar la variable de entorno `Path` y agregar la ruta de la carpeta `bin` de Apache Maven.
+Por ejemplo:
+```
+%MAVEN_HOME%\bin
+```
+
+### Docker Desktop
+Docker Desktop es una herramienta que permite la creación, administración y ejecución de contenedores Docker en sistemas operativos Windows y macOS; en nuestro caso, se utilizará Docker Desktop para ejecutar contenedores de aplicaciones Quarkus en un entorno de desarrollo local
+
+Para instalar Docker Desktop, se debe seguir los siguientes pasos:
+
+1. Descargar el instalador de Docker Desktop v.4.36.0 desde el siguiente enlace: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
+
+2. Ejecutar el instalador descargado y seguir los pasos que se indican en el asistente de instalación.
+
+> [!NOTE]
+>  Para obtener más información sobre docker, haz clic en [Docker](https://www.docker.com/).
+>
+
+## Creación de un proyecto Quarkus
+Para crear un proyecto Quarkus, hay varias formas para hacerlo.
+1. Crear un proyecto Quarkus desde la línea de comandos [Quarkus CLI](https://quarkus.io/guides/cli-tooling)
+2. Crear un proyecto Quarkus desde la página web de Quarkus utilizando el siguiente enlace: [https://code.quarkus.io/](https://code.quarkus.io/).
+3. Crear un proyecto Quarkus desde el IDE IntelliJ IDEA utilizando el asistente de creación de proyectos, en nuestro caso, se utilizará esta opción.
+      3.1. Tener instalado el plugin de Quarkus Tools en IntelliJ IDEA.
+
+      3.2. Ir a la opción de `File` -> `New` -> `Project` y seleccionar la opción de `Quarkus` en el asistente de creación de proyectos.
+
+      <center><img src='./imgs/img_newproject.png' style= 'width: 100%; height: 50%;'></img></center>
+
+      3.3. Seleccionar las opciones de configuración del proyecto, como el nombre del proyecto, el grupo y la versión de Quarkus.
+
+      <center><img src='./imgs/img_configuracion.png' style= 'width: 100%;'></img></center>
+
+      3.4. También se pueden seleccionar las extensiones de Quarkus que se desean agregar al proyecto, como Hibernate ORM, RESTEasy, etc.
+
+      <center><img src='./imgs/img_configExtensiones.png' style= 'width: 80%; height: 50%;'></img></center>
+
+
+
+## Estructura de un proyecto Quarkus
+Al momento de crear un proyecto Quarkus, se generan una serie de carpetas y archivos que conforman la estructura del proyecto. A continuuacion se muestra una estructura basica de un proyecto Quarkus
+
+<center><img src='./imgs/ims_estructuraQuarkus.png' style= 'width: 80%; height: 50%;'></img></center>
+
+
 
 # Configuración base de datos en Quarkus
 
@@ -391,25 +467,4 @@ docker pull tuusuario/tuimagen:v1.0
 # ejemplo
 docker pull avvillas/product:v1.0
 ```
-
-# Servicio en la nube
-
-## Oracle Cloud Infrastructure (OCI) 
-OCI es una plataforma de nube pública y privada que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio. OCI es una plataforma de nube de alto rendimiento y segura que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio. OCI es una plataforma de nube de alto rendimiento y segura que ofrece una amplia gama de servicios de infraestructura y plataforma como servicio.
-
-### Opciones principales:
-- *OCI Container Instances:* 
-  - *Uso:* Ejecutar contenedores de Docker en la nube.
-  - *Costo:* Pago por uso basado en recursos (CPU, RAM) consumidos por el contenedor.
-  - *Ventaja:* Simple y económica si tienes pocos microservicios.
-- *OCI Kubernetes Engine (OKE):*
-  - *Uso:* Gestionar múltiples contenedores con Kubernetes.
-  - *Costo:* El uso de Kubernetes en OCI es gratuito, pero pagarías por las máquinas virtuales (VM) que sirven como nodos de tu clúster.
-  - *Ventaja:* Escalabilidad y gestión avanzada si planeas crecimiento.
-
->[!NOTE]
->
-> Para ver la estimación de costos para despliegue de microservicios en la nube, da clic [aquí](https://www.oracle.com/cloud/costestimator.html).
----
-
 
