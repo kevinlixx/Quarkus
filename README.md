@@ -1,41 +1,3 @@
-# 
-
-## Tabla de Contenidos
-- [](#)
-  - [Tabla de Contenidos](#tabla-de-contenidos)
-- [ Quarkus](#-quarkus)
-    - [¿Qué es GraalVM?](#qué-es-graalvm)
-    - [programacion reactiva](#programacion-reactiva)
-      - [vertx](#vertx)
-        - [dependencia necesaria para vertx](#dependencia-necesaria-para-vertx)
-    - [Mutiny](#mutiny)
-      - [Uni y Multi](#uni-y-multi)
-      - [dependencia necesaria para mutiny](#dependencia-necesaria-para-mutiny)
-    - [Hibernate orm panache](#hibernate-orm-panache)
-      - [Dependencias necesarias para hibernate orm panache](#dependencias-necesarias-para-hibernate-orm-panache)
-    - [Microservicios](#microservicios)
-  - [Prerrequisitos para trabajar con Quarkus](#prerrequisitos-para-trabajar-con-quarkus)
-    - [Java](#java)
-    - [Configuración de las variables de entorno](#configuración-de-las-variables-de-entorno)
-    - [IDE](#ide)
-    - [Apache Maven](#apache-maven)
-    - [Configuración de las variables de entorno](#configuración-de-las-variables-de-entorno-1)
-    - [Docker Desktop](#docker-desktop)
-  - [Creación de un proyecto Quarkus](#creación-de-un-proyecto-quarkus)
-  - [Estructura de un proyecto Quarkus](#estructura-de-un-proyecto-quarkus)
-- [Configuración base de datos en Quarkus](#configuración-base-de-datos-en-quarkus)
-  - [Configuración de una base de datos de forma sincrona](#configuración-de-una-base-de-datos-de-forma-sincrona)
-  - [Configuración de una base de datos de forma asincrona](#configuración-de-una-base-de-datos-de-forma-asincrona)
-  - [Conexión externa a la base de datos](#conexión-externa-a-la-base-de-datos)
-    - [JDBC vs vertx-reactive](#jdbc-vs-vertx-reactive)
-- [instalación de una base de datos en docker](#instalación-de-una-base-de-datos-en-docker)
-    - [Crear bd y usuario en la imagen de sqlserver](#crear-bd-y-usuario-en-la-imagen-de-sqlserver)
-- [Conexion de microservicios de quarkus en docker](#conexion-de-microservicios-de-quarkus-en-docker)
-  - [Cofiguracion de docker](#cofiguracion-de-docker)
-    - [configuracion pom.xml](#configuracion-pomxml)
-    - [1. Contruccion de la imagen de docker para los dos microservicios](#1-contruccion-de-la-imagen-de-docker-para-los-dos-microservicios)
-    - [2. Crear una red en docker](#2-crear-una-red-en-docker)
-  - [3. Subir los contenedores a docker hub](#3-subir-los-contenedores-a-docker-hub)
 
 # <center> Quarkus</center>
 
@@ -238,22 +200,134 @@ Para crear un proyecto Quarkus, hay varias formas para hacerlo.
 
       3.4. También se pueden seleccionar las extensiones de Quarkus que se desean agregar al proyecto, como Hibernate ORM, RESTEasy, etc.
 
-      <center><img src='./imgs/img_configExtensiones.png' style= 'width: 80%; height: 50%;'></img></center>
+      <center> <img src='./imgs/img_configExtensiones.png' style= 'width: 80%; height: 50%;'></img> </center>
 
 
 
 ## Estructura de un proyecto Quarkus
-Al momento de crear un proyecto Quarkus, se generan una serie de carpetas y archivos que conforman la estructura del proyecto. A continuuacion se muestra una estructura basica de un proyecto Quarkus
+Al momento de crear un proyecto Quarkus, se generan una serie de carpetas y archivos que conforman la estructura del proyecto. A continuacion se muestra una estructura basica de un proyecto Quarkus
 
-<center><img src='./imgs/ims_estructuraQuarkus.png' style= 'width: 80%; height: 50%;'></img></center>
+<center><img src='./imgs/ims_estructuraQuarkus.png' style= 'width: 80%; height: 50%;'></img> </center>
 
+#### .mvn
+Esta carpeta contiene los archivos de configuración de Maven, como el archivo `wrapper.properties` que se utiliza para configurar el wrapper de Maven. El wrapper de Maven es una herramienta que permite ejecutar Maven sin necesidad de instalarlo en el sistema.
 
+#### src
+Esta carpeta contiene el código fuente del proyecto, dividido en diferentes subcarpetas:
+- `main`: contiene el código fuente principal del proyecto, como las clases Java y los recursos de la aplicación.
+  - `java`: contiene las clases Java del proyecto.
+  - `resources`: contiene los recursos de la aplicación, como archivos de configuración, propiedades y plantillas.
+  - `docker`: contiene los archivos de configuración de Docker para la creación de contenedores.
+    - `Dockerfile.jvm`: archivo de configuración de Docker para la creación de un contenedor con la JVM.
+    - `Dockerfile.legacy-jar`: archivo de configuración de Docker para la creación de un contenedor con un JAR legado el cual es un archivo que contiene el código fuente de la aplicación y las dependencias.
+    - `Dockerfile.native`: archivo de configuración de Docker para la creación de un contenedor con un ejecutable nativo que se compila con GraalVM.
+    - `Dockerfile.native-micro`: archivo de configuración de Docker para la creación de un contenedor el cual sera mas pequeño y ligero que el contenedor de Dockerfile.native debido a que solo contiene el ejecutable nativo.
+  
+  - `test`: contiene el código fuente de las pruebas unitarias y de integración del proyecto.
+  
+#### target
+Esta carpeta contiene los archivos generados por Maven durante el proceso de compilación y empaquetado del proyecto
 
-# Configuración base de datos en Quarkus
+#### Pom.xml
+Este archivo es el archivo de configuración de Maven y contiene la información del proyecto, como las dependencias, los plugins y las configuraciones de Maven.
+
+#### README.md
+todo proyecto de quarkus tiene un archivo README.md el cual contiene algunas instrucciones donde se explica como ejecutar el proyexto en modo desarrollo y como empaquear el proyecto en cada una de las diferentes formas de empaquetado.
+
+## Ejemplo de un Microservicio en Quarkus
+Ahora crearemos un microservicio en Quarkus que se conectará a una base de datos y expondrá un servicio REST para realizar operaciones CRUD sobre los datos de la base de datos. Para ello, seguiremos los siguientes pasos:
+
+### Agregar dependencias 
+lo primero que haremos una vez creado el proyecto es agregar las dependencias necesarias para trabajar con una base de datos en quarkus, en este caso trabajaremos con las dependencias de [hibernate orm panache](https://quarkus.io/guides/hibernate-orm-panache), [vertx](https://quarkus.io/guides/vertx), [mutiny](https://quarkus.io/guides/mutiny-primer) y [REST](https://quarkus.io/guides/rest)
+
+### Creacion de las entidades
+
+Crearemos una entidad que represente los datos de la base de datos, en este caso crearemos una carpeta llamada controlador sen la carpeta main/java y crearemos una clase llamada Product.java que representará los datos de un producto. La clase Product.java debe tener las siguientes anotaciones:
+```java
+package com.avvillas.controlador;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity
+@Data // Lombok genera los getter y setter
+public class Product extends PanacheEntity { // PanacheEntity es una clase que nos permite hacer operaciones CRUD gracias a Hibernate ORM Panache nos facilita el trabajo con la base de datos
+
+    @Transient // indica que el campo no se mapea a la base de datos y se usa solo para almacenar datos de manera temporal
+    private Long id;
+
+    
+    @ManyToOne// muchos productos pueden pertenecer a un cliente
+    @JoinColumn(name = "customer", referencedColumnName = "id") // indica que la columna customer de la tabla product es una clave foranea que referencia a la columna id de la tabla customer
+
+    @JsonBackReference // evita la recursividad en la serializacion de los datos tomando a customer como el padre y product como el hijo
+    private Customer customer; // un producto pertenece a un cliente
+    @Column // indica que el campo es una columna de la tabla product
+    private Long product; // codigo del producto
+
+    // almacenaran los datos del producto de manera temporal
+    @Transient
+    private String name;
+    @Transient
+    private String code;
+    @Transient
+    private String description;
+}
+```
+> [!NOTE]
+>  no debemos crear los getter y setter de los atributos de la clase Product.java ya que lombok se encarga de generarlos automaticamente y el panaheEntity nos permite hacer operaciones CRUD sobre la base de datos sin necesidad de crear un repositorio para la entidad 
+
+Ahora crearemos una entidad para el cliente que sera el padre de la entidad product, para ello crearemos una clase llamada Customer.java en la carpeta controlador en la carpeta main/java que representará los datos de un cliente. La clase Customer.java debe tener las siguientes anotaciones:
+
+```java
+package com.avvillas.controlador;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.List;
+
+@Entity
+@Data // Lombok genera los getter y setter
+
+public class Customer extends PanacheEntity { // PanacheEntity es una clase que nos permite hacer operaciones CRUD
+
+    //Ahora vamos a definir los campos de la tabla
+    private String code;
+    private String accountNumber;
+    private String names;
+    private String surname;
+    private String phone;
+    private String address;
+    //Ahora vamos a definir la relación con la tabla Product
+    @OneToMany(mappedBy = "customer",cascade = {CascadeType.ALL},fetch = FetchType.EAGER) // un cliente puede tener varios productos
+    @JsonManagedReference
+    private List<Product> products; // lista de productos que tiene el cliente
+
+    //Ahora vamos a definir el metodo toString, el cual nos permite imprimir los datos de un cliente
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "code='" + code + '\'' +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", names='" + names + '\'' +
+                ", surname='" + surname + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
+}
+```
+### Configuración base de datos en Quarkus
 
 En quarkus se puede trabajar con diferentes bases de datos como mysql, postgresql, sqlserver, etc; hay dos formas de trabajar con una base de datos en quarkus de forma sincrona y asincrona, A continuacion se explicara como configurar una base de datos en quarkus.
 
-## Configuración de una base de datos de forma sincrona
+#### Configuración de una base de datos de forma sincrona
 
 Para la configuracion de una base de datos de forma sincrona se debe agregar las siguientes dependencias en el archivo pom.xml
 
@@ -279,7 +353,7 @@ quarkus.datasource.jdbc.max-size=20
 
 - se trabaja con jdbc para la conexion a la base de datos de forma sincrona y se bloquea el hilo de ejecucion hasta que se obtenga una respuesta de la base de datos
 
-## Configuración de una base de datos de forma asincrona
+#### Configuración de una base de datos de forma asincrona
 
 Para la configuracion de una base de datos de forma asincrona se debe agregar las siguientes dependencias en el archivo pom.xml
 
@@ -295,7 +369,6 @@ esta dependencia es el controlador de base de datos reactiva para mssql. Hiberna
 para la configuracion de la base de datos se debe agregar las siguientes propiedades en el archivo aplication.properties
 
 ```properties
-
 quarkus.datasource.db-kind=mssql
 quarkus.datasource.username=user
 quarkus.datasource.password=Pass
@@ -310,7 +383,7 @@ quarkus.datasource.jdbc=false
 >
 > el jdbc= false indica que se va a trabajar con una base de datos reactiva ya que el jdbc se trabaja con una base de datos de forma sincrona y la idea es que sea de manera asincroica y la aplication properties tiene por defecto el jbc
 
-## Conexión externa a la base de datos
+#### Conexión externa a la base de datos
 Para conectar quarkus con un db donde su properties estan en una ruta especifica se debe agregar la siguiente propiedad en el archivo aplication.properties
 
 ``` properties
@@ -323,7 +396,7 @@ el classpath:application.properties es la ruta por defecto de las propiedades de
 >
 > hay diferentes configuraciones para trabajar con una base de datos de forma asincrona y local o en la nube
 
-### JDBC vs vertx-reactive
+#### JDBC vs vertx-reactive
 
 - JDBC: 
     - se trabaja de forma sincrona
@@ -361,48 +434,375 @@ docker ps
 para crear la base de datos y el usuario en la imagen de sqlserver se puede hacer de dos formas, la primera es conectandose a la imagen de sqlserver y la segunda es copiando un archivo .sql a la imagen de sqlserver, en este caso se va a realizar la segunda forma
 
 ```bash
-docker start sqlserver2017
+docker start sqlserver2017 // para iniciar la imagen de sqlserver
 
-docker cp db.sql sqlserver2017:/db.sql 
+docker cp db.sql sqlserver2017:/db.sql // copiar el archivo db.sql a la imagen de sqlserver
 
-docker exec -it sqlserver2017 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -i /db.sql
+docker exec -it sqlserver2017 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -i /db.sql // ejecutar el archivo db.sql en la imagen de sqlserver
 ```
 
-# Conexion de microservicios de quarkus en docker
+En nuestro caso el archivo db.sql contiene las siguientes instrucciones
 
-## Cofiguracion de docker
+para nuestro mciroserivicio de product se va a crear una base de datos llamada product_db y un usuario llamado product_user con la contraseña Pr0duct!pass y se le van a otorgar permisos de db_owner
 
-vamos a plantear un ejemplo para comprender este punto, primero tenemos un microservicio llamadao product que se va a conectar a una base de datos sqlserver y luego tenemos otro microservicio llamado customer que se va a conectar al primer microservicio y a la base de datos sqlserver
+```sql
 
-### configuracion pom.xml
+-- Crear la base de datos product_db
+CREATE DATABASE product_db;
+GO
+
+-- Usar la base de datos product_db
+USE product_db;
+GO
+
+-- Crear el usuario product_user
+CREATE LOGIN product_user WITH PASSWORD = 'Pr0duct!pass';
+GO
+CREATE USER product_user FOR LOGIN product_user;
+GO
+
+-- Otorgar permisos al usuario product_user
+ALTER ROLE db_owner ADD MEMBER product_user;
+GO
+
+-- Crear la tabla Product en product_db
+CREATE TABLE Product (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    code NVARCHAR(50) NOT NULL,
+    name NVARCHAR(100) NOT NULL,
+    description NVARCHAR(255)
+);
+GO
+
+```
+
+Para nuestro microservicio de customer se va a crear una base de datos llamada customer_db y un usuario llamado customer_user con la contraseña CusT0mer!pass y se le van a otorgar permisos de db_owner.
+
+```sql
+-- Create the database
+CREATE DATABASE customer_db;
+GO
+
+-- Use the database
+USE customer_db;
+GO
+
+-- Create the user
+CREATE LOGIN customer_user WITH PASSWORD = 'Cust0mer!Pass';
+CREATE USER customer_user FOR LOGIN customer_user;
+GO
+
+-- Grant permissions to the user
+ALTER ROLE db_owner ADD MEMBER customer_user;
+GO
+
+-- Create the Customer table
+CREATE TABLE Customer (
+    id BIGINT IDENTITY PRIMARY KEY, -- PanacheEntity uses 'id' as the primary key
+    code VARCHAR(255) NOT NULL,
+    accountNumber VARCHAR(255) NOT NULL,
+    names VARCHAR(255) NOT NULL,
+    surname VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL
+);
+GO
+
+-- Create the Product table
+CREATE TABLE Product (
+    id BIGINT IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    customer_id BIGINT,
+    FOREIGN KEY (customer_id) REFERENCES Customer(id)
+);
+GO
+
+```
+
+
+### Creacion del modelo de datos
+Ahora crearemos un modelo de datos que represente los datos de la base de datos, en este caso crearemos una carpeta llamada modelo en la carpeta main/java y crearemos una clase llamada clsCustomerApi.java que representará los datos de un cliente. La clase clsCustomerApi.java debe tener las siguientes anotaciones:
+
+```java
+package com.avvillas.modelo;
+
+import com.avvillas.controlador.Customer;
+import com.avvillas.controlador.Product;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.panache.common.Sort;
+
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.ext.web.client.WebClientOptions;
+import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.ext.web.client.WebClient;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.smallrye.mutiny.helpers.spies.Spy.onFailure;
+import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NOT_FOUND;
+import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NO_CONTENT;
+
+
+@Slf4j
+@Path("/customer")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class ClsCustomerApi {
+    @Inject
+    Vertx vertx;
+
+    @ConfigProperty(name = "product.url")
+    String productServiceUrl;
+
+    private WebClient webClient;
+
+    @PostConstruct
+    void initialize() {
+        this.webClient = WebClient.create(vertx,
+                new WebClientOptions().setDefaultHost(productServiceUrl)
+                        .setSsl(false).setTrustAll(true));
+    }
+
+
+    // busca todos los registros de la tabla el names es el campo por el cual se ordena
+    @GET
+    public Uni<List<PanacheEntityBase>> list() { // nos busca todos los registros de la tabla el names es el campo por el cual se ordena
+        return Customer.listAll(Sort.by("names")) // se ordena por el campo name
+                .onItem().invoke(customers -> log.info("Retrieved customers: " + customers)) // si es exitoso se imprime el resultado
+                .onFailure().invoke(e -> log.error("Error retrieving customers", e)); // si hay un error se imprime el error
+    }
+
+    // busca un registro por el id
+    @GET
+    @Path("/{Id}")
+    public Uni<PanacheEntityBase> getById(@PathParam("Id") Long Id) { // busca un registro por el id
+        return Customer.findById(Id) // busca un registro por el id
+                .onItem().ifNotNull().invoke(customer -> log.info("Retrieved customer: " + customer)) // si es exitoso se imprime el resultado
+                .onItem().ifNull().failWith(() -> new WebApplicationException("Customer not found", NOT_FOUND)) // si es nulo se imprime un mensaje de error
+                .onFailure().invoke(e -> log.error("Error retrieving customer", e)); // si hay un error se imprime el error
+    }
+
+    // agrega un registro
+    @POST
+    public Uni<Response> add(Customer c) { // agrega un registro
+        if (c == null) { // si el registro es nulo
+            log.error("Customer is null");
+            return Uni.createFrom().item(Response.status(Response.Status.BAD_REQUEST).entity("Customer cannot be null").build()); // nos indica que el registro no puede ser nulo
+        }
+        log.info("Adding customer: " + c); // si no es nulo se imprime el registro
+        return Panache.withTransaction(c::persist) // se persiste el registro, los :: son para referenciar un metodo en este caso persist
+                .onItem().transform(inserted -> Response.status(Response.Status.CREATED).build()) // si es exitoso indica que se creo el registro
+                .onFailure().invoke(e -> log.error("Error persisting customer", e)); // si hay un error se imprime el error
+    }
+
+
+    // Actualiza un registro
+    @PUT
+    @Path("/{Id}")
+    public Uni<Response> update(@PathParam("Id") Long Id, Customer c) { // Actualiza un registro
+        return Panache
+                .withTransaction(() -> Customer.<Customer>findById(Id) // busca el registro por el id
+                        .onItem().ifNotNull().invoke(customer -> { // si es diferente de nulo
+                            customer.setAccountNumber(c.getAccountNumber()); // se actualiza el campo accountNumber
+                            customer.setNames(c.getNames()); // se actualiza los campos
+                            customer.setSurname(c.getSurname());
+                            customer.setPhone(c.getPhone());
+                            customer.setAddress(c.getAddress());
+                            customer.setProducts(c.getProducts());
+                        })
+                )
+                .onItem().ifNotNull().transform(entity -> Response.ok(entity).build())
+                .onItem().ifNull().continueWith(Response.status(NOT_FOUND)::build)
+                .onFailure().invoke(e -> log.error("Error updating customer", e)); // se imprime el error
+    }
+
+    // Elimina un registro
+    @DELETE
+    @Path("/{Id}")
+    public Uni<Response> delete(@PathParam("Id") Long Id) { // Elimina un registro
+        return Panache.withTransaction(() -> Customer.deleteById(Id)) // se elimina el registro por el id
+                .onItem().transform(deleted -> deleted
+                        ? Response.ok().status(NO_CONTENT).build()
+                        : Response.status(NOT_FOUND).build())
+                // el ? es un operador ternario si es verdadero se imprime el mensaje de que se elimino el registro
+                // el : es un operador ternario si es falso se imprime el mensaje de que no se encontro el registro
+                .onFailure().invoke(e -> log.error("Error deleting customer", e)); // si hay un error se imprime el error
+    }
+    @GET
+    @Path("/{Id}/product")
+    public Uni<Customer> getByIdProduct(@PathParam("Id") Long Id) {
+        log.info("Fetching customer with ID: " + Id);
+        return Uni.combine().all().unis(getCustomerReactive(Id), getAllProducts())
+                .asTuple()
+                .map(tuple -> {
+                    Customer customer = tuple.getItem1();
+                    List<Product> products = tuple.getItem2();
+                    log.info("Customer: " + customer);
+                    log.info("Products: " + products);
+                    customer.getProducts().forEach(product -> {
+                        products.forEach(p -> {
+                            log.info("Ids are: " + product.getProduct() + " = " + p.getId());
+                            if (product.getProduct().equals(p.getId())) {
+                                product.setName(p.getName());
+                                product.setDescription(p.getDescription());
+                            }
+                        });
+                    });
+                    return customer;
+                })
+                .onFailure().retry().atMost(3) // Retry up to 3 times on failure
+                .onFailure().invoke(e -> log.error("Error fetching customer or products", e))
+                .onFailure().recoverWithItem(e -> {
+                    log.error("Recovering from error: ", e);
+                    Customer errorCustomer = new Customer();
+                    errorCustomer.setNames("Error fetching: " + e.getMessage());
+                    return errorCustomer;
+                });
+    }
+
+
+    @GET
+    @Path("/products")
+    public Uni<List<Product>> getAllProducts(){
+        return webClient.get(8081, "localhost", "/product").send()
+                .onFailure().invoke(res -> log.error("Error recuperando productos ", res))
+                .onItem().transform(res -> {
+                    List<Product> lista = new ArrayList<>();
+                    JsonArray objects = res.bodyAsJsonArray();
+                    objects.forEach(p -> {
+                        log.info("See Objects: " + objects);
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        // Pass JSON string and the POJO class
+                        Product product = null;
+                        try {
+                            product = objectMapper.readValue(p.toString(), Product.class);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                        lista.add(product);
+                    });
+                    return lista;
+                });
+    }
+
+    private Uni<Customer> getCustomerReactive(Long Id){
+        return Customer.findById(Id);
+    }
+
+}
+```
+
+> [!NOTE]
+> Como se puede observar en el codigo anterior se esta trabajando con una base de datos de forma asincrona y se esta haciendo uso de mutiny para trabajar con los datos de la base de datos de forma reactiva y mediante el uso de vertx se esta haciendo una peticion a un microservicio de product para obtener los datos de los productos
+
+
+### dependencias adicionales
+-Swagger-ui permite visualizar y probar los servicios REST de la aplicación. Para habilitar Swagger-ui, se debe agregar la siguiente dependencia en el archivo pom.xml
+
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-openapi</artifactId>
+</dependency>
+```
+
+- Para habilitar la generación de documentación OpenAPI, se debe agregar la siguiente propiedad en el archivo application.properties
+
+```properties 
+
+# Swagger UI configuration 
+quarkus.swagger-ui.path=/swagger-ui # ruta de acceso a swagger-ui
+quarkus.swagger-ui.always-include=true # indica que siempre se incluya swagger-ui
+mp.openapi.extensions.smallrye.info.title=Customer API # titulo de la documentacion
+%dev.mp.openapi.extensions.smallrye.info.title=Customer API(development) # titulo de la documentacion en modo desarrollo
+%test.mp.openapi.extensions.smallrye.info.title=Customer API (test) # titulo de la documentacion en modo test
+mp.openapi.extensions.smallrye.info.version=1.0.1 # version de la documentacion
+mp.openapi.extensions.smallrye.info. description=Microservicio de clientes # descripcion de la documentacion 
+
+```
+
+>[!NOTE]
+> Para obtener más información sobre la documentacion de una api en quarkus, haz clic en [Documentacion de swagger-ui](https://quarkus.io/guides/openapi-swaggerui).
+
+
+### Ejecutar el microservicio en modo desarrollo
+Quarkus nos permite nuestros servicios en modo desarrollo,el cual nos permite realizar cambios en el código fuente y ver los cambios reflejados en tiempo real sin necesidad de reiniciar el servidor. Para ejecutar el microservicio en modo desarrollo, se debe seguir los siguientes pasos:
+
+1. Abrir una terminal y ejecutar el siguiente comando para iniciar el microservicio en modo desarrollo, tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
+   
+```bash
+./mvnw compile quarkus:dev
+```
+una vez escrita esta linea de codigo aparecera lo siguiente en la terminal
+
+![alt text](image.png)
+
+iremos a la ruta http://localhost:8080/q/dev-ui/ para visualizar la interfaz en modo desarrollo
+
+
+![alt text](image-1.png)
+
+y para visualizar que todo este funcionando correctamente iremos a la ruta http://localhost:8080/swagger-ui/ para visualizar la documentacion de la api
+
+![alt text](image-2.png)
+
+
+> [!IMPORTANT]
+> se debe teenr ejecutando el contenedor donde esta la base de datos para que el microservicio pueda conectarse a la base de datos si no no correra el microservicio
+>
+
+
+### Empaquetar el microservicio
+Una vez que se hayan realizado las pruebas en modo desarrollo, se debe empaquetar el microservicio para su despliegue en un entorno de producción. Para empaquetar el microservicio, se debe seguir los siguientes pasos:
+
+1. en el pom.xml se debe agregar la siguiente propiedad para que el microservicio se empaquete en u nejecutable de graalvm
+
 ```xml
 <quarkus.package.type>native</quarkus.package.type>
 <quarkus.native.container-build>true</quarkus.native.container-build>
 ```
-el package type native indica que se va a trabajar con una imagen de docker y el container-build indica que se va a trabajar con un contenedor de docker
 
-
-### 1. Contruccion de la imagen de docker para los dos microservicios
+2. Ejecutar el siguiente comando para empaquetar el microservicio en un ejecutable nativo de GraalVM
 
 ```bash
-./mvnw package -Dnative 
-
-
-docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/code-with-quarkus .
-
-
+./mvnw package -Dnative
 ```
-Una vez realizadas las pruebas del contenedor se crea de manera permanente ya que el -rm elimina el contenedor una vez se detiene
+
+> [!NOTE]
+> Este comando empaqueta el microservicio en un ejecutable nativo de GraalVM, el cual es un ejecutable ligero y rápido que no requiere una JVM para ejecutarse.
+
+### Cofiguracion de docker
+
+Para conectar los microservicios de quarkus en docker se debe seguir los siguientes pasos
 
 ```bash
-docker network create my_network
+docker network create my_network // crea una red en docker para que los contenedores puedan comunicarse entre ellos
 
 
-docker run -i -p 8080:8080 --network my_network --name customer quarkus/code-with-quarkus
+docker run -i -p 8080:8080 --network my_network --name customer quarkus/code-with-quarkus // corre el contenedor del microservicio customer
 
-docker run -i -p 8081:8081 --network my_network --name product quarkus/code-with-quarkus
+docker run -i -p 8081:8081 --network my_network --name product quarkus/code-with-quarkus // corre el contenedor del microservicio product
 
-docker network inspect my_network
+docker network inspect my_network // confirma que los contenedores esten conectados a la red
 ``` 
 Antes de crear los contenedores se debe crear una red en docker para que los contenedores puedan comunicarse entre ellos;En este caso se creo dos contenedores uno para el microservicio product y otro para el microservicio customer
 
@@ -411,7 +811,7 @@ Antes de crear los contenedores se debe crear una red en docker para que los con
 >
 > esta informacion es un ejemplo para la creacion de un dockerfile.native-micro para un microservicio, para mas informacion de los diferentes tipos de dockerfile se puede consultar en la documentacion de quarkus
 
-### 2. Crear una red en docker
+#### Crear una red en docker
 En caso de que ya tenga creado los contenedores y quiera conectarlos a una red en docker se puede hacer de la siguiente manera
 
 - primero creamos una red en docker para que los contenedores puedan comunicarse entre si

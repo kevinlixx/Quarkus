@@ -5,8 +5,8 @@
   "elements": [
     {
       "type": "text",
-      "version": 2981,
-      "versionNonce": 2016042521,
+      "version": 2982,
+      "versionNonce": 946447127,
       "isDeleted": false,
       "id": "U9Y62vuZqVNHq6ZA9bX-R",
       "fillStyle": "hachure",
@@ -15,12 +15,12 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": 336.67347717285156,
+      "x": 336.7011030054555,
       "y": 298.5222225723253,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 213.55392415055937,
-      "height": 80.39889135870041,
+      "width": 213.49867248535156,
+      "height": 80.39889135870042,
       "seed": 2013157495,
       "groupIds": [
         "FFTT63cHug9f12ATh9DTI"
@@ -28,7 +28,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1738876067264,
+      "updated": 1738894344283,
       "link": null,
       "locked": false,
       "fontSize": 33.499538066125176,
@@ -39,7 +39,7 @@
       "containerId": null,
       "originalText": "microservicio \ncustomer",
       "lineHeight": 1.2,
-      "baseline": 68.99999999999999
+      "baseline": 69
     },
     {
       "type": "line",
