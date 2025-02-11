@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  customer-panache:
+    image: customer:2.0
+    build:
+      context: ./customer-panache
+      dockerfile: ./src/main/docker/Dockerfile.native-micro
+    ports:
+      - "8080:8080"
+    networks:
+      - conecta21
+
+  product:
+    image: product:2.0
+    build:
+      context: ./product
+      dockerfile: ./src/main/docker/Dockerfile.native-micro
+    ports:
+      - "8081:8081"
+    networks:
+      - conecta21
+
+networks:
+  conecta21:
+    driver: bridge
