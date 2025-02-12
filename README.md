@@ -808,7 +808,6 @@ Antes de crear los contenedores se debe crear una red en docker para que los con
 
 
 >[!NOTE]
->
 > esta informacion es un ejemplo para la creacion de un dockerfile.native-micro para un microservicio, para mas informacion de los diferentes tipos de dockerfile se puede consultar en la documentacion de quarkus
 
 #### Crear una red en docker
