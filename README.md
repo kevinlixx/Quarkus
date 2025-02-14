@@ -842,7 +842,22 @@ Una vez que se hayan realizado las pruebas en modo desarrollo, se debe empaqueta
 > [!NOTE]
 > Este comando empaqueta el microservicio en un ejecutable nativo de GraalVM, el cual es un ejecutable ligero y rápido que no requiere una JVM para ejecutarse.
 
+### Crear la imagen de docker para el microservicio
+
+Una vez que se haya empaquetado el microservicio, se debe crear una imagen de docker para el microservicio. Para crear la imagen de docker, se debe seguir los siguientes pasos:
+
+1. Como quarkus nos genera los dockerfile lo que haremos es ir a nuestro caso al dokcerfile.native.micro y construiremos la imagen de docker con el siguiente comando
+
+```bash
+docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/customer:1.0 .
+```
+
+[!NOTE]
+> Esta misma construccion se debe hacer para el [microservicio de product](./JDK17/pjba_microservicios_product/)
+
+
 ### Cofiguracion de docker
+Ahora vamos a conectar dos microservicios de quarkus en docker, con el [microservicio customer](./JDK17/pjba_microservicio_cliente/) que fue el que se creo en este ejemplo y el [microservicio product](./JDK17/pjba_microservicio_product/) que ya esta creado en el repositorio pero sigue los mismos pasos que el microservicio customer
 
 Para conectar los microservicios de quarkus en docker se debe seguir los siguientes pasos
 
@@ -850,17 +865,20 @@ Para conectar los microservicios de quarkus en docker se debe seguir los siguien
 docker network create my_network // crea una red en docker para que los contenedores puedan comunicarse entre ellos
 
 
-docker run -i -p 8080:8080 --network my_network --name customer quarkus/code-with-quarkus // corre el contenedor del microservicio customer
+docker run -i --rm -p 8080:8080 --network my_network --name customer quarkus/customer:1.0 // corre el contenedor del microservicio customer debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
 
-docker run -i -p 8081:8081 --network my_network --name product quarkus/code-with-quarkus // corre el contenedor del microservicio product
+docker run -i --rm -p 8081:8081 --network my_network --name product quarkus/product:1.0 // corre el contenedor del microservicio product debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
 
-docker network inspect my_network // confirma que los contenedores esten conectados a la red
+docker network inspect my_network // confirma que los contenedores esten conectados a la red 
 ``` 
-Antes de crear los contenedores se debe crear una red en docker para que los contenedores puedan comunicarse entre ellos;En este caso se creo dos contenedores uno para el microservicio product y otro para el microservicio customer
+> [!TIP]
+> Hay varias formas de conectar los microservicios de quarkus en docker, en este caso se esta usando una red en docker para que los contenedores puedan comunicarse entre ellos pero tambien se puede hacer mediante un docker-compose o mediante un dockerfile para ver estos modos de conexion se puede consultar en la documentacion de docker
+>
 
+Ahora vamos a probar que los microservicios esten conectados entre si, para ello vamos a la ruta http://localhost:8080/swagger-ui/ que es el microservicio customer que consume el microservicio product y comprobaremos /customer/{Id}/product que es el metodo que consume el microservicio product ydebe aparecer de la siguiente manera
 
->[!NOTE]
-> esta informacion es un ejemplo para la creacion de un dockerfile.native-micro para un microservicio, para mas informacion de los diferentes tipos de dockerfile se puede consultar en la documentacion de quarkus
+ejemplo
+<center><img src="./imgs/img_conexion_microServicios.png"  width="800"/></center>
 
 #### Crear una red en docker
 En caso de que ya tenga creado los contenedores y quiera conectarlos a una red en docker se puede hacer de la siguiente manera
