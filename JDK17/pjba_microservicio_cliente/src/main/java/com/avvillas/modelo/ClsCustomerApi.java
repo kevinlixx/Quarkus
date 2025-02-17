@@ -155,7 +155,7 @@ public class ClsCustomerApi {
     @GET
     @Path("/products")
     public Uni<List<Product>> getAllProducts(){
-        return webClient.get(8081, "localhost", "/product").send()
+        return webClient.get(8081, "product", "/product").send()
                 .onFailure().invoke(res -> log.error("Error recuperando productos ", res))
                 .onItem().transform(res -> {
                     List<Product> lista = new ArrayList<>();
