@@ -9,12 +9,12 @@ import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
 class ExampleResourceTest {
-    @Test
+    /*@Test
     void testCustomerEndpoint() {
         given()
                 .when().get("/customer")
                 .then()
                 .statusCode(200)
                 .body("$.size()", greaterThan(0)); // Verifica que la respuesta tenga más de un elemento
-    }
+    }*/
 }

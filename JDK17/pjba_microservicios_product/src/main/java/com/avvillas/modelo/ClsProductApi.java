@@ -11,13 +11,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import java.util.List;
 
-import static io.smallrye.mutiny.helpers.spies.Spy.onFailure;
-import static io.smallrye.mutiny.helpers.spies.Spy.onItem;
 import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NOT_FOUND;
 
 @Slf4j // para poder usar el log

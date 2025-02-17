@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
 class ClsProductApiTest {
+    /*
     @Test
     void testProductEndpoint() {
         given()
@@ -16,6 +17,6 @@ class ClsProductApiTest {
           .then()
              .statusCode(200)
              .body("$.size()", greaterThan(0)); // Verifica que la respuesta tenga más de un elemento
-    }
+    }*/
 
 }

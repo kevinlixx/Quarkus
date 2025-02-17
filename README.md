@@ -826,14 +826,30 @@ y para visualizar que todo este funcionando correctamente iremos a la ruta http:
 ### Empaquetar el microservicio
 Una vez que se hayan realizado las pruebas en modo desarrollo, se debe empaquetar el microservicio para su despliegue en un entorno de producción. Para empaquetar el microservicio, se debe seguir los siguientes pasos:
 
-1. en el pom.xml se debe agregar la siguiente propiedad para que el microservicio se empaquete en u nejecutable de graalvm
+1. en el pom.xml al final se debe agregar la siguiente propiedad para que el microservicio se empaquete en u nejecutable de graalvm
 
 ```xml
-<quarkus.package.type>native</quarkus.package.type>
-<quarkus.native.container-build>true</quarkus.native.container-build>
+    <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <properties>
+                <skipITs>false</skipITs>
+                <quarkus.native.container-build>true</quarkus.native.container-build>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+            </properties>
+        </profile>
 ```
 
-2. Ejecutar el siguiente comando para empaquetar el microservicio en un ejecutable nativo de GraalVM
+1. Se debe actualizar el properties del microservicio para que se conecte a la base de datos de sqlserver2017 en docker ya que en contenedores de docker se va a conectar medinate una red de docker y no por localhost
+
+```properties
+quarkus.datasource.reactive.url=vertx-reactive:sqlserver://sqlserver2017:1433/customer_db
+ ```
+3. Ejecutar el siguiente comando para empaquetar el microservicio en un ejecutable nativo de GraalVM
 
 ```bash
 ./mvnw package -Dnative
@@ -852,7 +868,13 @@ Una vez que se haya empaquetado el microservicio, se debe crear una imagen de do
 docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/customer:1.0 .
 ```
 
+
+
 [!NOTE]
+> este es un ejemplo de como se puede crear la imagen de docker para el microservicio, en este caso se esta creando la imagen de docker para el microservicio customer pero se puede hacer para el microservicio product siguiendo los mismos pasos
+
+
+> [!IMPORTANT]
 > Esta misma construccion se debe hacer para el [microservicio de product](./JDK17/pjba_microservicios_product/)
 
 
@@ -864,10 +886,11 @@ Para conectar los microservicios de quarkus en docker se debe seguir los siguien
 ```bash
 docker network create my_network // crea una red en docker para que los contenedores puedan comunicarse entre ellos
 
+docker network connect my_network sqlserver2017 // conecta el contenedor de sqlserver a la red creada
 
-docker run -i --rm -p 8080:8080 --network my_network --name customer quarkus/customer:1.0 // corre el contenedor del microservicio customer debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
+docker run -i --rm -p 8080:8080 --network my_netwoek --name customer customer:1.0 // corre el contenedor del microservicio customer debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
 
-docker run -i --rm -p 8081:8081 --network my_network --name product quarkus/product:1.0 // corre el contenedor del microservicio product debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
+docker run -i --rm -p 8081:8081 --network my_network --name product product:1.0 // corre el contenedor del microservicio product debemos tener en cuenta que el microservicio debe estar en la carpeta raiz del proyecto
 
 docker network inspect my_network // confirma que los contenedores esten conectados a la red 
 ``` 
@@ -896,7 +919,7 @@ En nuestro caso sera a los dos contenedores
 
 ```bash
 
-docker network connect my_network customer
+docker network connect prueba customer sqlserver2017
 
 docker network connect my_network product
 ```
@@ -910,11 +933,11 @@ docker network inspect my_network
 Para subir los contenedores a docker hub se debe seguir los siguientes pasos
 
 1. Iniciar sesion en docker hub
-```bash
+``` bash
 docker login
 ```
 2. 
-```bash
+``` bash
 docker commit <container-id> tuusuario/nombreimagen:v1.0
 
 docker commit 28663bcd0e8fb42628ed91643a7f87bdd950cc3a187af6ab0c4a4e1c270ececb avvillas/product:v1.0
