@@ -849,7 +849,16 @@ Una vez que se hayan realizado las pruebas en modo desarrollo, se debe empaqueta
 ```properties
 quarkus.datasource.reactive.url=vertx-reactive:sqlserver://sqlserver2017:1433/customer_db
  ```
-3. Ejecutar el siguiente comando para empaquetar el microservicio en un ejecutable nativo de GraalVM
+2. Actualizar en el clsCustomerApi.java la url del microservicio de product ya que se va a conectar mediante una red de docker y no por localhost
+
+```java
+   public Uni<List<Product>> getAllProducts(){
+        return webClient.get(8081, "product", "/product").send()
+```
+
+[!NOTE]
+> Los nombres como el sqlserver2017 y product son los nombres de los contenedores de docker que se crearon en el paso anterior si se crearon con otros nombres se deben cambiar en el properties y en el clsCustomerApi.java
+1. Ejecutar el siguiente comando para empaquetar el microservicio en un ejecutable nativo de GraalVM
 
 ```bash
 ./mvnw package -Dnative
